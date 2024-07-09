@@ -8,3 +8,4 @@ pytest-mongodb
 pytest-bdd
 httpx
 requests
+motor
