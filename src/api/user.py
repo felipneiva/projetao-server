@@ -1,16 +1,12 @@
 from fastapi import APIRouter, HTTPException
-
-router = APIRouter()
-
 import datetime
-from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import List
 from bson import ObjectId
 from src.schemas.user import User
-from src.db.database import collection
+from src.db.database import users
 
-
+router = APIRouter()
 
 def format_result(user) -> dict:
     return {
@@ -38,21 +34,21 @@ def format_result(user) -> dict:
     }
 
 # create user
-
 @router.post("/", response_model=User, status_code=201)
 async def create_user(user: User):
     user_dict = user.dict()
     user_dict["creation_date"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-    created_user = await collection.find_one({"email": user_dict["email"]})
+    created_user = await users.find_one({"email": user_dict["email"]})
     if not created_user:
-        result = await collection.insert_one(user_dict)
-        new_user = await collection.find_one({"_id": result.inserted_id})
+        result = await users.insert_one(user_dict)
+        new_user = await users.find_one({"_id": result.inserted_id})
         return format_result(new_user)
     raise HTTPException(status_code=400, detail="User could not be created")
 
+# get users
 @router.get("/", response_model=List[User])
 async def get_users():
-    users = []
-    async for user in collection.find():
-        users.append(format_result(user))
-    return users
+    user_list = []
+    async for user in users.find():
+        user_list.append(format_result(user))
+    return user_list
