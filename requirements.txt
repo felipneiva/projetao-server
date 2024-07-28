@@ -9,3 +9,6 @@ pytest-bdd
 httpx
 requests
 motor
+pandas
+xgboost
+scikit-learn
