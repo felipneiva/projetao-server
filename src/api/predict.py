@@ -29,7 +29,7 @@ def predict(input_data, model):
 
 router = APIRouter()
 
-@router.put("/", status_code=200, tags=["prediction"])
+@router.post("/", status_code=200, tags=["prediction"])
 def test(input_data: PredictionInput):
     data = [input_data.latitude, input_data.longitude, input_data.seconds, input_data.minutes, input_data.hour, input_data.day_of_week]
     
