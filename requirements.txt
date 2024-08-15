@@ -12,3 +12,4 @@ motor
 pandas
 xgboost
 scikit-learn
+langchain_google_genai

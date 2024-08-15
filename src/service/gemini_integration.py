@@ -1,41 +1,34 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
-from dotenv import load_dotenv
-import os
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-load_dotenv()
-key = os.getenv("GEMINI_API_KEY")
+import google.generativeai as genai
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
-    google_api_key= key
-)
+genai.configure(api_key="AIzaSyB52dkFpdApMbHdtMUBmOHW7EjbyzZWuqo")
 
-messages = [
-    ("system",
-     "Vou passar para você um dataset de três colunas. Uma delas é um timestamp, a outra é a localização do usuário e a terceira é se o usuário está com vontade de fumar ou não. Preciso que você analise as colunas de localização e de timestamp para prever se o usuário está com vontade de fumar ou não",
-    ),
-    ("user",
-        
-        '''2024-01-10 23:01:00 -10.740051   82.287765             0
-        2024-01-14 16:54:00 -13.406533  -33.199698             1
-        2024-01-20 08:40:00 -30.692331 -138.501117             0
-        2024-01-26 07:17:00  15.612444  107.609661             0
-        2024-01-30 23:25:00  64.009259 -150.670515             0
-        2024-01-02 06:36:00  62.802653 -138.765478             0
-        2024-01-05 05:33:00  -8.059404   97.947400             1
-        2024-01-22 14:51:00 -31.559359  -23.528834             0
-        2024-01-06 17:35:00 -60.027054 -124.082342             0
-        2024-01-18 03:39:00  -3.589850  149.260255             1
-        2024-01-04 00:52:00  83.567070  -62.123495             0
-        2024-01-13 09:02:00  83.264587   -7.975343             0
-        2024-01-09 18:45:00  58.789910   64.742032             0
-        2024-01-17 09:42:00 -15.025321  -56.872865             0
-        2024-01-07 07:03:00  -6.847978 -133.785701             0
-        2024-01-20 15:38:00  47.964072   82.597830             0
-        2024-01-15 05:08:00 -11.200502  -40.185328             1
-        2024-01-13 19:35:00 -55.349770   91.919977             0
-        2024-01-30 16:30:00 -21.546100   68.687655             0
-        2024-01-19 11:23:00 -73.335654  132.528573             1'''),
-]
-ai_msg = llm.invoke(messages)
-print(ai_msg.content)
+
+model = genai.GenerativeModel('gemini-1.5-flash')
+response = model.generate_content("Estou com vontade de fumar. Sugira algumas atividades que me ajudem a distrair e reduzir o desejo de fumar. Você tem que me responder 3 atividades diferentes  \
+                                   e aleatórias,  Dentre a seguinte lista:  \
+                                Beber um copo de água \
+                                Fazer uma caminhada curta \
+                                Mastigar chiclete ou comer uma bala sem açúcar \
+                                Praticar respiração profunda \
+                                Ler um livro ou artigo interessante \
+                                Assistir a um vídeo motivacional \
+                                Fazer um alongamento \
+                                Escutar uma música relaxante ou animadora\
+                                Praticar meditação ou mindfulness \
+                                Escrever um diário ou suas razões para parar de fumar \
+                                Conversar com um amigo ou familiar \
+                                Fazer um quebra-cabeça ou jogo de lógica \
+                                Cuidar de uma planta ou jardim \
+                                Assistir a um episódio de uma série ou filme favorito \
+                                Organizar ou limpar um espaço \
+                                Tocar um instrumento musical ou aprender algo novo \
+                                Fazer uma lista de gratidão \
+                                Praticar exercícios físicos \
+                                Tomar um banho relaxante \
+                                Experimentar uma nova receita de comida saudável \
+                                Responda apenas no seguinte formato ['atividade 1', 'atividade 2', 'atividade 3']")
+print(response.text)
