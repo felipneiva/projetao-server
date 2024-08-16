@@ -20,13 +20,16 @@ async def create_daily_report(report: DailyReport):
     report_dict = report.dict()
     today_date = datetime.datetime.now().strftime("%Y-%m-%d")
     
-    existing_report = await daily_reports.find_one({"email": report_dict["email"], "date": today_date})
+    if report_dict.get("date") == "string":
+        report_dict["date"] = today_date
+
+    existing_report = await daily_reports.find_one({"email": report_dict["email"], "date": report_dict["date"]})
     if existing_report:
-        raise HTTPException(status_code=400, detail="A report for today already exists")
+        raise HTTPException(status_code=400, detail="A report for the given date already exists")
     
-    report_dict["date"] = today_date
     result = await daily_reports.insert_one(report_dict)
     new_report = await daily_reports.find_one({"_id": result.inserted_id})
+    
     return format_daily_report(new_report)
 
 
